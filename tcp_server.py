@@ -10,6 +10,8 @@
 # More examples: https://shakeelosmani.wordpress.com/2015/04/13/python-3-socket-programming-example/
 #
 #
+# Min examples: http://stackoverflow.com/questions/12141150/from-list-of-integers-get-number-closest-to-a-given-value
+#
 
 import random
 import time
