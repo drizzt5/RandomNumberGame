@@ -9,6 +9,8 @@
 import socket
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+### ask for info
 #host = input("Server hostname or ip? ")
 #port = int(input("Server port? "))
 
@@ -17,6 +19,7 @@ host = "localhost"
 port = 2468
 
 sock.connect((host,port))
+
 while True:
 
     # if data == "exit":

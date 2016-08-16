@@ -7,6 +7,7 @@
 # Advice on background threads:
 # http://sebastiandahlgren.se/2014/06/27/running-a-method-as-a-background-thread-in-python/
 #
+# More examples: https://shakeelosmani.wordpress.com/2015/04/13/python-3-socket-programming-example/
 #
 #
 
@@ -25,16 +26,22 @@ class ThreadedServer(object):
         self.number = random.randrange(0, 101, 2)
         self.game_time = game_time # Time for the players to actually join the game
         self.guessedNumbers = {}
-
-
-
+        self.clientList = []
+    # def run(self):
+    #     print("Starting server...")
 
 
     def listen(self):
         self.sock.listen(20)
         while True:
             client, address = self.sock.accept()
-            client.settimeout(60)
+            self.clientList.append(address)
+
+            if len(self.clientList) >= 2:
+                counterThread=threading.Thread(target = self.countdown)
+                counterThread.daemon = True
+                counterThread.start()
+            #client.settimeout(60)
 
             #threading.Thread(target = self.countdown())
 
@@ -76,14 +83,22 @@ class ThreadedServer(object):
                 return False
 
     def countdown(self):
+        print("At least two players have connected! Starting Game Time!: ")
         t = self.game_time
-        while t:
+        while t > 0:
+            time.sleep(0)
+
             mins, secs = divmod(t, 60)
             timeformat = '{:02d}:{:02d}'.format(mins, secs)
             print(timeformat)
             time.sleep(1)
             t -= 1
-        print('Goodbye!\n')
+        print('End of round!\n')
+        closest = (min(self.guessedNumbers.values(), key=lambda x: abs(int(x) - self.number)))
+        for key in self.guessedNumbers:
+            if self.guessedNumbers[key]==closest:
+                print(key, " wins!")
+
 
 
 
@@ -97,7 +112,7 @@ if __name__ == "__main__":
     #port_num = int(input("Port? "))
     port_num = 2468
     #game_time = int(input("How long would you like to wait for players?"))
-    game_time = 10
+    game_time = 20
 
     ThreadedServer('',port_num,game_time).listen()
 
