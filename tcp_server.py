@@ -12,11 +12,16 @@
 #
 # Min examples: http://stackoverflow.com/questions/12141150/from-list-of-integers-get-number-closest-to-a-given-value
 #
+#
+#
+# Stopping: http://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread-in-python
+#
 
 import random
 import time
 import socket
 import threading
+
 
 class ThreadedServer(object):
     def __init__(self, host, port, game_time):
@@ -29,8 +34,6 @@ class ThreadedServer(object):
         self.game_time = game_time # Time for the players to actually join the game
         self.guessedNumbers = {}
         self.clientList = []
-    # def run(self):
-    #     print("Starting server...")
 
 
     def listen(self):
@@ -41,15 +44,17 @@ class ThreadedServer(object):
 
             if len(self.clientList) >= 2:
                 counterThread=threading.Thread(target = self.countdown)
-                counterThread.daemon = True
+                counterThread.isDaemon = True
                 counterThread.start()
             #client.settimeout(60)
 
             #threading.Thread(target = self.countdown())
-
             listenThread = threading.Thread(target = self.listenToClient,args = (client,address))
-            listenThread.daemon = True
+            listenThread.isDaemon = True
             listenThread.start()
+
+
+
 
 
     def listenToClient(self, client, address):
@@ -75,9 +80,9 @@ class ThreadedServer(object):
 
                     print(self.guessedNumbers)
 
+                    if self.game_time == 0:
 
-                    #print("Current number of clients: ", (threading.active_count()-1))
-                    #print(threading.enumerate())
+
                 else:
                     raise 'Client disconnected'
             except:
@@ -96,10 +101,16 @@ class ThreadedServer(object):
             time.sleep(1)
             t -= 1
         print('End of round!\n')
-        closest = (min(self.guessedNumbers.values(), key=lambda x: abs(int(x) - self.number)))
-        for key in self.guessedNumbers:
-            if self.guessedNumbers[key]==closest:
-                print(key, " wins!")
+        try:
+            closest = (min(self.guessedNumbers.values(), key=lambda x: abs(int(x) - self.number)))
+            for key in self.guessedNumbers:
+                if self.guessedNumbers[key]==closest:
+                    print(key, " wins!")
+            self.game_time = 0
+        except: #incase no one enters a number
+            print("No one wins...")
+            self.game_time = 0
+
 
 
 
@@ -114,7 +125,10 @@ if __name__ == "__main__":
     #port_num = int(input("Port? "))
     port_num = 2468
     #game_time = int(input("How long would you like to wait for players?"))
-    game_time = 20
+    game_time = 5
+    reset = game_time
+
+    #while game_time != 0:
 
     ThreadedServer('',port_num,game_time).listen()
 
