@@ -17,13 +17,12 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ### Test data
 host = "localhost"
 port = 2468
-
+value = True
 sock.connect((host,port))
 
-while True:
 
-    # if data == "exit":
-    #     break
+
+def clientRun():
     while True:
         try:
             data = int(input("Enter a number between 1-100: "))
@@ -39,4 +38,28 @@ while True:
     data = str(data)
     data = data.encode()
     sock.send(data)
-    print("response: ", sock.recv(1024))
+    message = sock.recv(1024).decode()
+
+    disCon = "Disconnecting now"
+    disCon = disCon.encode()
+
+    if message == 'win':
+        print("End of Game \n You Win!")
+        sock.send(disCon)
+        return False
+
+    elif message == 'lose':
+        print("End of Game \n You Lose!")
+        sock.send(disCon)
+        return False
+    else:
+        print("response: ", message)
+        return True
+
+
+
+while value == True:
+    value = clientRun()
+
+sock.shutdown(2)
+sock.close()

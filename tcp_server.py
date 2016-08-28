@@ -34,6 +34,8 @@ class ThreadedServer(object):
         self.game_time = game_time # Time for the players to actually join the game
         self.guessedNumbers = {}
         self.clientList = []
+        self.winners = []
+        self.losers = []
 
 
     def listen(self):
@@ -63,6 +65,7 @@ class ThreadedServer(object):
         while True:
             try:
                 data = client.recv(size)
+                data = data.decode()
                 if data:
                     # Set the response to echo back the recieved data
                     response = (str(number)).encode()
@@ -91,8 +94,6 @@ class ThreadedServer(object):
         print("At least two players have connected! Starting Game Time!: ")
         t = self.game_time
         while t > 0:
-            time.sleep(0)
-
             mins, secs = divmod(t, 60)
             timeformat = '{:02d}:{:02d}'.format(mins, secs)
             print(timeformat)
@@ -104,11 +105,30 @@ class ThreadedServer(object):
             for key in self.guessedNumbers:
                 if self.guessedNumbers[key]==closest:
                     print(key, " wins!")
-            self.game_time = 0
+                    self.winners.append(key)
+                else:
+                    self.losers.append(key)
+
+            #self.game_time = 0
+            self.kickOffClients(self.winners)
         except: #incase no one enters a number
             print("No one wins...")
-            self.game_time = 0
+            self.kickOffClients(self.winners)
 
+    def kickOffClients(self, winners):
+
+
+
+        print("winners:")
+        print(self.winners)
+        print("losers")
+        print(self.losers)
+
+        self.guessedNumbers = {}
+        self.clientList = []
+        self.winners = []
+        self.losers = []
+        self.number = random.randrange(0, 101, 2)
 
 
 
