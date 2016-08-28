@@ -80,8 +80,6 @@ class ThreadedServer(object):
 
                     print(self.guessedNumbers)
 
-                    if self.game_time == 0:
-
 
                 else:
                     raise 'Client disconnected'
