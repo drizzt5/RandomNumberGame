@@ -26,7 +26,7 @@ sock.connect((host,port))
 
 
 def clientRun():
-    #I was going to use this number to stop it from asking after the client guesses once. 
+    #I was going to use this number to stop it from asking after the client guesses once.
     data = 666
     while True:
         if data == 666:
@@ -65,3 +65,8 @@ while value == True:
 
 sock.shutdown(2)
 sock.close()
+
+
+#TODO I need to make it so that the winner and loser is returned with the random number, client side.
+
+#TODO I also need to find a way to boot off clients who haven't guessed when the time is up.
