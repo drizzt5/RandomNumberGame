@@ -1,4 +1,26 @@
+#######################################################################
+# Author: Dillon Glasser
+# Program Project for CS3502
+#
+# Some websites I used for guidance:
+#
+# More examples:
+# https://shakeelosmani.wordpress.com/2015/04/13/python-3-socket-programming-example/
+# Min examples:
+# http://stackoverflow.com/questions/12141150/from-list-of-integers-get-number-closest-to-a-given-value
+# Stopping:
+# http://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread-in-python
+# Sockets:
 # https://www.webcodegeeks.com/python/python-sockets-example/
+# Threading:
+# http://sebastiandahlgren.se/2014/06/27/running-a-method-as-a-background-thread-in-python/
+# Starter code taken from:
+# http://stackoverflow.com/questions/23828264/how-to-make-a-simple-multithreaded-socket-server-in-python-that-remembers-client
+# Countdown code:
+# http://stackoverflow.com/questions/25189554/countdown-clock-0105
+########################################################################
+
+
 
 
 
@@ -20,7 +42,6 @@ class ThreadedServer(object):
         self.game_time = game_time
         self.guessedNumbers = {}
         self.clientList = []
-        self.condition = True
         self.winners = []
         self.losers = []
 
@@ -30,7 +51,7 @@ class ThreadedServer(object):
 
 
     def run(self):
-        print("New Round Starting!")
+        print("Game will start when ready:")
         while True:
             t = threading.Timer(self.game_time, self.endFunction)
 
@@ -48,11 +69,7 @@ class ThreadedServer(object):
             if len(self.clientList) == 0:
                 print("Waiting for 2 players...")
                 time.sleep(3)
-
-            listen = threading.Thread(target=self.listen)
-            listen.isDaemon = True
-            listen.start()
-
+            self.listen()
 
 
     def listen(self):
@@ -61,12 +78,19 @@ class ThreadedServer(object):
         listenThread = threading.Thread(target=self.listenToClient, args=(client, address))
         listenThread.isDaemon = True
         listenThread.start()
+        return True
 
 
     def listenToClient(self, client, address):
         size = 1024
         number = self.number
-        while self.condition == True:
+        win = "win"
+        win = win.encode()
+        lose = "lose"
+        lose = lose.encode()
+
+
+        while True:
             try:
                 data = client.recv(size)
                 data = data.decode()
@@ -77,20 +101,28 @@ class ThreadedServer(object):
 
                 if isinstance(data, int):
 
-                    # Set the response to echo back the recieved data
-                    response = (str(number)).encode()
-                    #print("{} wrote:".format(self.client_address[0]))
+                    # Set the response
+                    #response = (str(number)).encode()
+                    response = "\nGuess has been recorded!\nYou can change your guess until the time expires \nor enter the same # to see if you won."
+                    response = response.encode()
 
-                    #Store each clients guessedNumbers
-                    #self.guessedNumbers.append(data)
 
-                    client.send(response)
-
-                    # The good thing is that this only saves the latest guess
+                    # saves the latest guess
                     self.guessedNumbers[threading.get_ident()] = data
-                   # self.guessedNumbers["hi"] = data
 
-                    print(self.guessedNumbers)
+
+                    #print(self.guessedNumbers)
+
+                    if threading.get_ident() in self.winners:
+                        # response = (str(number)).encode()
+                        # client.send(response)
+                        client.send(win)
+                        client.close()
+                    elif threading.get_ident() in self.losers:
+                        client.send(lose)
+                        client.close()
+                    else:
+                        client.send(response)
 
 
                 else:
@@ -99,61 +131,47 @@ class ThreadedServer(object):
                 client.close()
                 return False
 
-        #After while loop closes
-        win = "win"
-        win = win.encode()
-        lose = "lose"
-        lose = lose.encode()
-
-        client.send(win)
-        client.close()
-
     def determineWinners(self):
         try:
             closest = (min(self.guessedNumbers.values(), key=lambda x: abs(int(x) - self.number)))
             for key in self.guessedNumbers:
                 if self.guessedNumbers[key]==closest:
-                    print(key, " wins!")
+                    print(key, "wins!")
                     self.winners.append(key)
                 else:
                     self.losers.append(key)
+            #return 0
 
-            #self.game_time = 0
-        except: #incase no one enters a number
+        # incase no one enters a number
+        except:
             print("No one wins...")
-
+            for key in self.guessedNumbers:
+                self.losers.append(key)
+            #return 1
 
 
     def endFunction(self):
         print("End of Game")
+        print("The random number was", str(self.number))
 
         self.determineWinners()
 
-
-
-
-
-        self.condition = False
-        # result = str(self.sock.shutdown(2))
-        # print(result)
-        # self.sock.close()
-        time.sleep(5)
-        print("Restarting game in 5 seconds...")
-
-        self.number = random.randrange(0, 101, 2)
-        self.condition = True
-        self.clientList = []
-
-        t = 5
+        print("Restarting game in 10 seconds...")
+        time.sleep(7)
+        t = 3
         while t > 0:
             mins, secs = divmod(t, 60)
             timeformat = '{:02d}:{:02d}'.format(mins, secs)
             print(timeformat)
             time.sleep(1)
             t -= 1
-        self.run()
 
-        #ThreadedServer('', port_num, game_time).run()
+        self.number = random.randrange(0, 101, 2)
+        self.clientList = []
+        self.winners = []
+        self.losers = []
+        self.guessedNumbers = {}
+        self.run()
 
 
 

@@ -1,10 +1,12 @@
-# Code taken from:
+############################################
+# Author: Dillon Glasser
+# Program Project for CS3502
+#
+# Starter code:
 # http://stackoverflow.com/questions/23828264/how-to-make-a-simple-multithreaded-socket-server-in-python-that-remembers-client
 #
-#
-#
-#
-#
+###############################################
+
 
 import socket
 
@@ -23,37 +25,35 @@ sock.connect((host,port))
 
 
 def clientRun():
+    data = 666
     while True:
-        try:
-            data = int(input("Enter a number between 1-100: "))
-            if data < 1:
-                raise ValueError
-            if data > 100:
-                raise ValueError
-            break
-        except ValueError:
-            print("You need to enter a number between 1-100, try again!")
+        if data == 666:
+            try:
+                data = int(input("Enter a number between 1-100: "))
+                if data < 1:
+                    raise ValueError
+                if data > 100:
+                    raise ValueError
+                break
+            except ValueError:
+                data = 666
+                print("You need to enter a number between 1-100, try again!")
 
-    # ints cant be encoded?
+    print(data)
     data = str(data)
     data = data.encode()
     sock.send(data)
     message = sock.recv(1024).decode()
 
-    disCon = "Disconnecting now"
-    disCon = disCon.encode()
-
     if message == 'win':
-        print("End of Game \n You Win!")
-        sock.send(disCon)
+        print("End of Game\nYou Win!")
         return False
 
     elif message == 'lose':
-        print("End of Game \n You Lose!")
-        sock.send(disCon)
+        print("End of Game\nYou Lose!")
         return False
     else:
-        print("response: ", message)
+        print("\nServer Response:", message, "\n")
         return True
 
 

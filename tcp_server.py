@@ -1,20 +1,16 @@
-# Starter code taken from:
-#   http://stackoverflow.com/questions/23828264/how-to-make-a-simple-multithreaded-socket-server-in-python-that-remembers-client
-#
-# Countdown code:
-#  http://stackoverflow.com/questions/25189554/countdown-clock-0105
+
 #
 # Advice on background threads:
-# http://sebastiandahlgren.se/2014/06/27/running-a-method-as-a-background-thread-in-python/
-#
-# More examples: https://shakeelosmani.wordpress.com/2015/04/13/python-3-socket-programming-example/
-#
-#
-# Min examples: http://stackoverflow.com/questions/12141150/from-list-of-integers-get-number-closest-to-a-given-value
+
 #
 #
 #
-# Stopping: http://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread-in-python
+#
+#
+#
+#
+#
+#
 #
 
 import random
