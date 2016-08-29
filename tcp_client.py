@@ -1,6 +1,7 @@
 ############################################
 # Author: Dillon Glasser
 # Program Project for CS3502
+# tcp_client code
 #
 # Starter code:
 # http://stackoverflow.com/questions/23828264/how-to-make-a-simple-multithreaded-socket-server-in-python-that-remembers-client
@@ -25,6 +26,7 @@ sock.connect((host,port))
 
 
 def clientRun():
+    #I was going to use this number to stop it from asking after the client guesses once. 
     data = 666
     while True:
         if data == 666:
